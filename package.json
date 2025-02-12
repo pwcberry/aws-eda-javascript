@@ -2,10 +2,16 @@
   "name": "aws-eda-javascript",
   "version": "1.0.0",
   "description": "Learning how to send messages and the like through various asynchronous instruments available in AWS.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "type": "module",
   "scripts": {
+    "start": "node lib/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "private": true
+  "private": true,
+  "dependencies": {
+    "@aws-sdk/client-lambda": "^3.744.0",
+    "@aws-sdk/client-s3": "^3.744.0",
+    "@aws-sdk/client-sns": "^3.744.0"
+  }
 }

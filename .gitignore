@@ -146,3 +146,4 @@ dist
 # Dev
 .idea/
 .vscode/
+package-lock.json
