@@ -12,6 +12,7 @@
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.744.0",
     "@aws-sdk/client-s3": "^3.744.0",
-    "@aws-sdk/client-sns": "^3.744.0"
+    "@aws-sdk/client-sns": "^3.744.0",
+    "date-fns": "^4.1.0"
   }
 }

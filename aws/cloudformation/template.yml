@@ -1,0 +1,69 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: The Cloudformation template to set up a simple data pipeline built with SNS, Lambda, and S3.
+
+Parameters:
+  SnsTopicName:
+    Type: String
+    Description: The name of the topic to send messages through
+  S3BucketName:
+    Type: String
+    Description: The name of the bucket that will store the user objects
+Resources:
+  UserBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: UserBucket
+    Properties:
+      Bucket: !Ref S3BucketName
+      PolicyDocument:
+        Statement:
+          - Action:
+              - s3:GetObject
+              - s3:PutObject
+            Effect: Allow
+            Principal:
+              CanonicalUser:
+                !GetAtt ["LambdaAccessIdentity", "S3CanonicalUserId"]
+            Resource: !Join
+              - ""
+              - - "arn:aws:s3:::"
+                - !Refff S3BucketName
+                - "/*"
+
+  UserBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref S3BucketName
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+
+# See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-lambda.html
+# See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html
+# See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html
+  HandleIncomingMessageFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: nodejs20.x
+      Code:
+
+# See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html
+# See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html
+  SnsTopic:
+    Type: AWS::SNS:Topic
+    Properties:
+      TopicName: !Ref SnsTopicName
